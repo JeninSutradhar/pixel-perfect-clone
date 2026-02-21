@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 const Index = () => {
   const [time, setTime] = useState(new Date());
@@ -7,6 +7,13 @@ const Index = () => {
     const interval = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(interval);
   }, []);
+
+  // Static barcode heights so they don't re-render
+  const leftBarcode = useMemo(() => Array.from({ length: 40 }, () => ({ w: Math.random() > 0.5 ? 2 : 1, h: 16 + Math.random() * 8 })), []);
+  const rightBarcode = useMemo(() => Array.from({ length: 40 }, () => ({ w: Math.random() > 0.5 ? 2 : 1, h: 16 + Math.random() * 8 })), []);
+  const binaryRows = useMemo(() => Array.from({ length: 8 }, () =>
+    Array.from({ length: 48 }, () => (Math.random() > 0.5 ? "1" : "0")).join(" ")
+  ), []);
 
   const formattedTime = time.toLocaleTimeString("en-US", {
     hour: "2-digit",
@@ -57,38 +64,46 @@ const Index = () => {
         </h1>
 
         {/* ORANGE BAR */}
-        <div className="bg-primary text-accent-foreground mt-0 -mx-8 md:-mx-12 px-8 md:px-12 py-5 flex flex-col md:flex-row md:items-end gap-4 relative">
-          {/* Binary pattern box */}
-          <div className="hidden md:block w-60 h-24 border border-foreground/20 bg-primary/80 p-2 overflow-hidden font-mono text-[8px] leading-tight opacity-70 flex-shrink-0">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i}>
-                {Array.from({ length: 48 }).map(() => (Math.random() > 0.5 ? "1" : "0")).join(" ")}
-              </div>
-            ))}
+        <div className="bg-primary text-foreground mt-2 mx-0 md:mx-0 px-6 md:px-8 py-5 relative">
+          {/* Top row: binary box + text + copyright */}
+          <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+            {/* Binary pattern box - white background */}
+            <div className="w-full md:w-56 h-28 border border-foreground/30 bg-background p-3 overflow-hidden font-mono text-[7px] leading-tight flex-shrink-0">
+              {binaryRows.map((row, i) => (
+                <div key={i} className="text-foreground/80">{row}</div>
+              ))}
+            </div>
+
+            {/* Middle text */}
+            <div className="flex-1">
+              <p className="text-[9px] md:text-[10px] leading-snug uppercase tracking-wide max-w-xl font-medium">
+                CAN BE HANDLED BY BOTH MEN AND WOMEN. THINK MORE, DESIGN LESS. AFTER USE APPLY ON
+                SOCIAL MEDIA AND SHARE. SIDE STEP. MAKE STEAK (OPTIONAL, BUT RECOMMENDED). FOR BEST
+                RESULTS, PLEASE CONTACT YOUR PROFESSIONAL DESIGNER / DEVELOPER. SOMETHING'S NEVER
+                TOO FANCY. FOR WORST RESULTS, USE WITHOUT COFFEE/TEA. NOW TIME TO SIT BACK & RELAX.
+              </p>
+            </div>
+
+            {/* Top right copyright */}
+            <div className="hidden md:block flex-shrink-0">
+              <span className="text-xs font-medium tracking-wide">CHRLS©2023</span>
+            </div>
           </div>
 
-          <div className="flex-1">
-            <p className="text-[10px] md:text-xs leading-snug uppercase tracking-wide max-w-xl">
-              CAN BE HANDLED BY BOTH MEN AND WOMEN. THINK MORE, DESIGN LESS. AFTER USE APPLY ON
-              SOCIAL MEDIA AND SHARE. SIDE STEP. MAKE STEAK (OPTIONAL, BUT RECOMMENDED). FOR BEST
-              RESULTS, PLEASE CONTACT YOUR PROFESSIONAL DESIGNER / DEVELOPER. SOMETHING'S NEVER
-              TOO FANCY. FOR WORST RESULTS, USE WITHOUT COFFEE/TEA. NOW TIME TO SIT BACK & RELAX.
-            </p>
-            <p className="text-lg md:text-xl font-bold uppercase mt-3 tracking-wide">
+          {/* Bottom row: Independent Developer + barcode lines + Made in Indonesia */}
+          <div className="flex items-end justify-between mt-3">
+            <p className="text-lg md:text-xl font-bold uppercase tracking-wide">
               Independent Developer
             </p>
-          </div>
 
-          {/* Right side info */}
-          <div className="flex flex-col items-end gap-1 flex-shrink-0">
-            <span className="text-xs font-medium tracking-wide">CHRLS©2023</span>
-            {/* Barcode-like lines */}
-            <div className="flex items-end gap-[2px] h-6 mt-1">
-              {[3,1,4,1,2,3,1,1,4,2,1,3,1,2,1,4,1,1,3,2].map((h, i) => (
+            {/* Barcode-like lines in middle */}
+            <div className="hidden md:flex items-end gap-[2px] h-6">
+              {[3,1,4,1,2,3,1,1,4,2,1,3,1,2,1,4,1,1,3,2,1,2,3,1,4,1,2,1].map((h, i) => (
                 <div key={i} className="bg-foreground" style={{ width: 2, height: h * 5 }} />
               ))}
             </div>
-            <span className="text-xs tracking-wide mt-1">MADE IN INDONESIA.</span>
+
+            <span className="text-xs tracking-wide font-medium">MADE IN INDONESIA.</span>
           </div>
         </div>
       </main>
@@ -97,8 +112,8 @@ const Index = () => {
       <div className="bg-background border-t border-foreground/10 px-4 py-2 flex items-center justify-center gap-4 text-xs tracking-wider overflow-hidden">
         {/* Left barcode */}
         <div className="flex items-center gap-[1px] flex-shrink-0">
-          {Array.from({ length: 40 }).map((_, i) => (
-            <div key={i} className="bg-foreground" style={{ width: Math.random() > 0.5 ? 2 : 1, height: 16 + Math.random() * 8 }} />
+          {leftBarcode.map((b, i) => (
+            <div key={i} className="bg-foreground" style={{ width: b.w, height: b.h }} />
           ))}
         </div>
 
@@ -116,8 +131,8 @@ const Index = () => {
 
         {/* Right barcode */}
         <div className="flex items-center gap-[1px] flex-shrink-0">
-          {Array.from({ length: 40 }).map((_, i) => (
-            <div key={i} className="bg-foreground" style={{ width: Math.random() > 0.5 ? 2 : 1, height: 16 + Math.random() * 8 }} />
+          {rightBarcode.map((b, i) => (
+            <div key={i} className="bg-foreground" style={{ width: b.w, height: b.h }} />
           ))}
         </div>
       </div>
