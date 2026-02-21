@@ -1,39 +1,65 @@
 import { useEffect, useRef, useState, useMemo } from "react";
 
 const projects = [
-  { name: "JEAN PHILIPPE", year: "2023", color: "hsl(24, 100%, 50%)" },
-  { name: "THE FLEUR", year: "2022", color: "hsl(75, 100%, 50%)" },
-  { name: "ZUNC STUDIO", year: "2022", color: "hsl(180, 100%, 50%)" },
-  { name: "NEON ARTS", year: "2023", color: "hsl(24, 100%, 50%)" },
-  { name: "PIXEL LABS", year: "2024", color: "hsl(75, 100%, 50%)" },
+  {
+    name: "JEAN PHILIPPE",
+    year: "2023",
+    color: "#FF6600",
+    image: "https://images.unsplash.com/photo-1618220179428-22790b461013?w=800&h=600&fit=crop"
+  },
+  {
+    name: "ZUNC STUDIO",
+    year: "2022",
+    color: "#FF6600",
+    image: "https://images.unsplash.com/photo-1634842460017-c2b6bad3e07c?w=800&h=600&fit=crop"
+  },
+  {
+    name: "ONDREJ ZUNKA",
+    year: "2023",
+    color: "#DFFF00",
+    image: "https://images.unsplash.com/photo-1544967082-d9d25d867eeb?w=800&h=600&fit=crop"
+  },
+  {
+    name: "RAGS",
+    year: "2022",
+    color: "#00E5FF",
+    image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&h=600&fit=crop"
+  },
+  {
+    name: "THE FLEUR",
+    year: "2024",
+    color: "#00FF88",
+    image: "https://images.unsplash.com/photo-1618219878776-593523677036?w=800&h=600&fit=crop"
+  },
 ];
 
-// Generate a small fake QR code grid
-const FauxQR = ({ size = 7 }: { size?: number }) => {
+const FauxQR = ({ size = 8 }: { size?: number }) => {
   const grid = useMemo(
     () =>
       Array.from({ length: size }, () =>
-        Array.from({ length: size }, () => Math.random() > 0.4)
+        Array.from({ length: size }, () => Math.random() > 0.5)
       ),
     [size]
   );
   return (
-    <div className="grid gap-[1px]" style={{ gridTemplateColumns: `repeat(${size}, 1fr)` }}>
+    <div
+      className="grid gap-[1px] border-2 border-foreground p-1"
+      style={{ gridTemplateColumns: `repeat(${size}, 1fr)` }}
+    >
       {grid.flat().map((filled, i) => (
         <div
           key={i}
           className={filled ? "bg-foreground" : "bg-transparent"}
-          style={{ width: 4, height: 4 }}
+          style={{ width: 3, height: 3 }}
         />
       ))}
     </div>
   );
 };
 
-// Generate barcode lines
-const Barcode = ({ count = 24 }: { count?: number }) => {
+const Barcode = ({ count = 20 }: { count?: number }) => {
   const bars = useMemo(
-    () => Array.from({ length: count }, () => ({ w: Math.random() > 0.5 ? 2 : 1, h: 18 + Math.random() * 14 })),
+    () => Array.from({ length: count }, () => ({ w: Math.random() > 0.5 ? 2 : 1, h: 20 + Math.random() * 10 })),
     [count]
   );
   return (
@@ -45,11 +71,10 @@ const Barcode = ({ count = 24 }: { count?: number }) => {
   );
 };
 
-// Braille-like dots
 const BrailleDots = () => (
   <div className="grid grid-cols-2 gap-[2px]">
     {Array.from({ length: 6 }).map((_, i) => (
-      <div key={i} className="w-1.5 h-1.5 rounded-full bg-foreground/70" />
+      <div key={i} className="w-1 h-1 rounded-full bg-foreground" />
     ))}
   </div>
 );
@@ -62,65 +87,67 @@ const ProjectCard = ({
   style: React.CSSProperties;
 }) => (
   <div
-    className="absolute w-[320px] md:w-[380px] border-2 border-foreground shadow-[4px_4px_0px_0px] shadow-foreground/30 bg-card overflow-hidden will-change-transform"
+    className="absolute w-[340px] md:w-[400px] border-[3px] border-foreground shadow-[8px_8px_0px_0px] shadow-foreground/40 bg-card overflow-hidden will-change-transform rounded-md"
     style={style}
   >
-    {/* Image area */}
-    <div className="w-full h-[220px] md:h-[260px] bg-foreground/10 overflow-hidden rounded-t-sm">
-      <div className="w-full h-full bg-gradient-to-br from-foreground/5 to-foreground/20 flex items-center justify-center">
-        <span className="text-foreground/30 text-xs uppercase tracking-widest">Project Preview</span>
-      </div>
+    <div className="w-full h-[280px] md:h-[320px] bg-foreground/5 overflow-hidden">
+      <img
+        src={project.image}
+        alt={project.name}
+        className="w-full h-full object-cover"
+        loading="lazy"
+      />
     </div>
 
-    {/* Ticket section */}
     <div
-      className="p-4 border-t-2 border-dashed border-foreground/40"
+      className="px-3 py-2 border-t-[3px] border-dashed border-foreground"
       style={{ backgroundColor: project.color }}
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex-1">
-          <h3 className="text-lg font-black uppercase tracking-tight text-foreground leading-tight">
-            {project.name}
-          </h3>
-          <div className="flex items-center gap-2 mt-2">
-            <BrailleDots />
-            <span className="text-[9px] uppercase tracking-wider text-foreground/70 font-medium">
-              EXPIRED DATE
-            </span>
-            <span className="text-[9px] font-bold text-foreground">{project.year}</span>
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2 flex-1">
+          <Barcode count={12} />
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="text-right">
+            <p className="text-[8px] uppercase tracking-wide font-medium leading-none">EXPIRED</p>
+            <p className="text-[8px] uppercase tracking-wide font-medium leading-none">DATE</p>
+            <p className="text-[10px] font-bold leading-none mt-0.5">{project.year}</p>
           </div>
+          <FauxQR size={8} />
         </div>
-        <div className="flex flex-col items-end gap-2">
-          <FauxQR size={7} />
-          <Barcode count={16} />
-        </div>
+      </div>
+      <div className="flex items-center gap-2 mt-2">
+        <h3 className="text-base md:text-lg font-black uppercase tracking-tight text-foreground leading-none">
+          {project.name}
+        </h3>
+        <BrailleDots />
       </div>
     </div>
   </div>
 );
 
-const MARQUEE_TEXT = "SELECTED CLIENT WORK \u00A0\u2022\u00A0 ";
+const MARQUEE_TEXT = "WORK SELECTED CLIENT WORK SELECTED CLIENT ";
 
-const DiagonalStrip = ({
-  angle,
-  top,
-}: {
-  angle: number;
-  top: string;
-}) => (
+const DiagonalStrip = () => (
   <div
-    className="absolute left-[-20%] w-[140%] overflow-hidden z-0 pointer-events-none"
-    style={{ top, transform: `rotate(${angle}deg)` }}
+    className="absolute left-[-10%] w-[120%] overflow-hidden z-0 pointer-events-none"
+    style={{
+      top: "50%",
+      transform: "translateY(-50%) rotate(-5deg)"
+    }}
   >
-    <div className="bg-primary py-3 flex whitespace-nowrap animate-marquee">
-      {Array.from({ length: 4 }).map((_, i) => (
+    <div className="bg-primary py-4 md:py-6 flex whitespace-nowrap animate-marquee">
+      {Array.from({ length: 8 }).map((_, i) => (
         <span
           key={i}
-          className="text-primary-foreground text-2xl md:text-3xl font-black uppercase tracking-[0.2em] mx-4"
+          className="text-foreground text-3xl md:text-5xl font-black uppercase tracking-wider mx-2"
+          style={{
+            WebkitTextStroke: "2px currentColor",
+            WebkitTextFillColor: "transparent",
+            textShadow: "none"
+          }}
         >
-          {Array.from({ length: 6 }).map((_, j) => (
-            <span key={j}>{MARQUEE_TEXT}</span>
-          ))}
+          {MARQUEE_TEXT}
         </span>
       ))}
     </div>
@@ -130,6 +157,8 @@ const DiagonalStrip = ({
 const ProjectShowcase = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
+  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+  const [isHovering, setIsHovering] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -137,7 +166,6 @@ const ProjectShowcase = () => {
       const rect = sectionRef.current.getBoundingClientRect();
       const sectionHeight = sectionRef.current.offsetHeight;
       const viewportHeight = window.innerHeight;
-      // progress 0 when section top hits viewport bottom, 1 when section bottom hits viewport top
       const scrolled = -rect.top;
       const total = sectionHeight - viewportHeight;
       const p = Math.max(0, Math.min(1, scrolled / total));
@@ -149,28 +177,35 @@ const ProjectShowcase = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setCursorPos({ x: e.clientX, y: e.clientY });
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
+
   const getCardStyle = (index: number): React.CSSProperties => {
     const total = projects.length;
-    // Each card has a threshold where it starts flying off
     const threshold = 0.1 + (index / total) * 0.7;
-    const exitDuration = 0.18; // portion of progress for the exit anim
+    const exitDuration = 0.18;
 
-    // Stack offset when idle
-    const stackOffsetY = index * -6;
-    const stackOffsetX = index * 2;
-    const stackRotate = index * -1.5;
+    const stackOffsetY = index * -8;
+    const stackOffsetX = index * 4;
+    const stackRotate = index * -2;
 
     let x = stackOffsetX;
     let y = stackOffsetY;
     let rotate = stackRotate;
     let opacity = 1;
-    let scale = 1 - index * 0.02;
+    let scale = 1 - index * 0.03;
 
     if (progress > threshold) {
       const exitProgress = Math.min(1, (progress - threshold) / exitDuration);
-      const eased = exitProgress * exitProgress; // ease-in
+      const eased = exitProgress * exitProgress;
       const direction = index % 2 === 0 ? -1 : 1;
-      x = stackOffsetX + direction * eased * 120; // vw units handled via calc
+      x = stackOffsetX + direction * eased * 120;
       y = stackOffsetY - eased * 80;
       rotate = stackRotate + direction * eased * 25;
       opacity = 1 - eased;
@@ -186,32 +221,41 @@ const ProjectShowcase = () => {
   };
 
   return (
-    <section ref={sectionRef} className="relative" style={{ height: "400vh" }}>
-      <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center">
-        {/* Diagonal strips behind cards */}
-        <DiagonalStrip angle={-8} top="20%" />
-        <DiagonalStrip angle={8} top="55%" />
+    <section
+      ref={sectionRef}
+      className="relative"
+      style={{ height: "400vh" }}
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+    >
+      <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center bg-background">
+        <DiagonalStrip />
 
-        {/* VIEW ALL link */}
         <div className="absolute top-8 right-8 md:right-12 z-20 flex items-center gap-2">
-          <svg className="w-5 h-5 text-foreground" viewBox="0 0 24 24" fill="currentColor">
+          <svg className="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 2L14 8H20L15 12L17 18L12 14L7 18L9 12L4 8H10L12 2Z" />
           </svg>
-          <a href="#" className="text-sm font-bold uppercase tracking-wider underline underline-offset-4 hover:opacity-70 transition-opacity">
+          <a href="#" className="text-sm font-bold uppercase tracking-wider text-foreground hover:opacity-70 transition-opacity">
             View All
           </a>
         </div>
 
-        {/* Pink circle button */}
-        <div className="absolute bottom-8 left-8 md:left-12 z-20">
-          <div className="w-14 h-14 rounded-full bg-[hsl(330,80%,55%)] flex items-center justify-center cursor-pointer hover:scale-110 transition-transform shadow-lg">
-            <svg className="w-5 h-5 text-foreground" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-              <path d="M5 3L19 12L5 21V3Z" />
+        {isHovering && (
+          <div
+            className="fixed w-20 h-20 rounded-full flex items-center justify-center cursor-none z-50 pointer-events-none transition-opacity duration-300"
+            style={{
+              left: cursorPos.x - 40,
+              top: cursorPos.y - 40,
+              background: "linear-gradient(135deg, #E91E63 0%, #FF4081 100%)",
+              boxShadow: "0 4px 20px rgba(233, 30, 99, 0.4)"
+            }}
+          >
+            <svg className="w-8 h-8 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <path d="M7 7L17 17M17 17V7M17 17H7" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
-        </div>
+        )}
 
-        {/* Project cards */}
         <div className="relative z-10 flex items-center justify-center">
           {[...projects].reverse().map((project, reverseIndex) => {
             const index = projects.length - 1 - reverseIndex;
@@ -225,9 +269,8 @@ const ProjectShowcase = () => {
           })}
         </div>
 
-        {/* Progress indicator */}
-        <div className="absolute bottom-8 right-8 md:right-12 z-20 text-xs tracking-wider text-foreground/50 font-medium">
-          SCROLL TO EXPLORE
+        <div className="absolute bottom-8 right-8 md:right-12 z-20 text-xs tracking-wider text-foreground/50 font-medium uppercase">
+          Scroll to Explore
         </div>
       </div>
     </section>
