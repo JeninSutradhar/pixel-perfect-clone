@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import ProjectShowcase from "@/components/ProjectShowcase";
 
 const ROWS = 8;
 const COLS = 48;
@@ -45,7 +46,9 @@ const Index = () => {
   });
 
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-hidden relative flex flex-col">
+    <div className="bg-background text-foreground relative">
+      {/* HERO SECTION */}
+      <div className="min-h-screen overflow-hidden flex flex-col">
       {/* NAV */}
       <header className="flex items-start justify-between px-8 pt-6 md:px-12 md:pt-8">
         {/* Logo */}
@@ -159,6 +162,10 @@ const Index = () => {
           ))}
         </div>
       </div>
+      </div>{/* end hero section */}
+
+      {/* PROJECT SHOWCASE */}
+      <ProjectShowcase />
     </div>
   );
 };
