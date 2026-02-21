@@ -1,19 +1,42 @@
 import { useState, useEffect, useMemo } from "react";
 
+const ROWS = 8;
+const COLS = 48;
+
+const generateGrid = (): string[][] =>
+  Array.from({ length: ROWS }, () =>
+    Array.from({ length: COLS }, () => (Math.random() > 0.5 ? "1" : "0"))
+  );
+
 const Index = () => {
   const [time, setTime] = useState(new Date());
+  const [binaryGrid, setBinaryGrid] = useState(generateGrid);
 
   useEffect(() => {
     const interval = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(interval);
   }, []);
 
-  // Static barcode heights so they don't re-render
+  // Matrix-style: randomly flip ~15 cells every 80ms for a live-data feel
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setBinaryGrid((prev) => {
+        const next = prev.map((row) => [...row]);
+        const flips = 10 + Math.floor(Math.random() * 12);
+        for (let f = 0; f < flips; f++) {
+          const r = Math.floor(Math.random() * ROWS);
+          const c = Math.floor(Math.random() * COLS);
+          next[r][c] = next[r][c] === "1" ? "0" : "1";
+        }
+        return next;
+      });
+    }, 80);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Static barcode heights
   const leftBarcode = useMemo(() => Array.from({ length: 40 }, () => ({ w: Math.random() > 0.5 ? 2 : 1, h: 16 + Math.random() * 8 })), []);
   const rightBarcode = useMemo(() => Array.from({ length: 40 }, () => ({ w: Math.random() > 0.5 ? 2 : 1, h: 16 + Math.random() * 8 })), []);
-  const binaryRows = useMemo(() => Array.from({ length: 8 }, () =>
-    Array.from({ length: 48 }, () => (Math.random() > 0.5 ? "1" : "0")).join(" ")
-  ), []);
 
   const formattedTime = time.toLocaleTimeString("en-US", {
     hour: "2-digit",
@@ -69,8 +92,8 @@ const Index = () => {
           <div className="flex flex-col md:flex-row gap-4 md:gap-6">
             {/* Binary pattern box - white background */}
             <div className="w-full md:w-56 h-28 border border-foreground/30 bg-background p-3 overflow-hidden font-mono text-[7px] leading-tight flex-shrink-0">
-              {binaryRows.map((row, i) => (
-                <div key={i} className="text-foreground/80">{row}</div>
+              {binaryGrid.map((row, i) => (
+                <div key={i} className="text-foreground/80">{row.join(" ")}</div>
               ))}
             </div>
 
